@@ -27,6 +27,8 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+import icsversion
+
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
 DOCS = ROOT / "docs"
@@ -380,6 +382,9 @@ def write_calendar(cal: dict, events: Events, today: dt.date) -> None:
     (out / "abfall.ics").write_text(render(cal, events, None), encoding="utf-8", newline="")
     (out / "abfall-erinnerung.ics").write_text(
         render(cal, events, CONFIG["erinnerung_uhrzeit"]), encoding="utf-8", newline="")
+    # Versionsstempel, damit Kalender-Apps geaenderte Termine uebernehmen
+    for name in ("abfall.ics", "abfall-erinnerung.ics"):
+        icsversion.stamp(out / name, ROOT / "ics-versionen.json", f"{cal['id']}/{name}:")
     (out / "index.html").write_text(PAGE.format(
         titel=html.escape(cal["titel"]),
         beschreibung=html.escape(cal["beschreibung"]),
