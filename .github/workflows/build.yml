@@ -1,0 +1,56 @@
+name: Kalender aktualisieren
+
+on:
+  schedule:
+    - cron: "23 4 * * *"   # taeglich ca. 05:23 Uhr (Winterzeit) / 06:23 Uhr (Sommerzeit)
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["config.json", "scripts/build.py", ".github/workflows/build.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Abfalltermine abrufen und ICS bauen
+        id: build
+        env:
+          ABFALL_ADRESSE: ${{ secrets.ABFALL_ADRESSE }}   # "Strasse|Hausnummer|PLZ", steht bewusst nicht im Repo
+        run: |
+          set +e
+          python scripts/build.py
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+      - name: Nur bei Aenderungen committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git add docs state.json
+          if git diff --cached --quiet; then
+            echo "Keine Aenderungen."
+          else
+            git commit -m "Abfalltermine aktualisiert"
+            git push
+          fi
+      - name: Pruefen, ob der Kalender online erreichbar ist
+        continue-on-error: true
+        run: |
+          url="https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/abfall.ics"
+          code=$(curl -s -o /tmp/online.ics -w "%{http_code}" "$url")
+          echo "$url -> HTTP $code, $(grep -c BEGIN:VEVENT /tmp/online.ics || true) Termine"
+          [ "$code" = "200" ] || { echo "::warning::$url nicht erreichbar (ist GitHub Pages eingeschaltet?)"; exit 1; }
+      - name: Fehler sichtbar machen
+        if: steps.build.outputs.rc != '0'
+        run: |
+          echo "::error::Der Abruf ist fehlgeschlagen (Details oben). Der bisherige Kalender bleibt erhalten."
+          exit 1

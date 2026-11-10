@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abfallkalender Rostock-Warnemünde</title>
+<style>
+  :root { --bg:#fff; --fg:#1d1d1f; --muted:#666; --box:#f3f4f6; --btn:#0a7d3b; --btn2:#3a3a3c; --g:#1a73e8; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#111; --fg:#eee; --muted:#aaa; --box:#222; --btn:#1f9d55; --btn2:#555; --g:#4c8df6; } }
+  body { background:var(--bg); color:var(--fg); font:17px/1.5 system-ui,-apple-system,sans-serif; max-width:36rem; margin:1.5rem auto; padding:0 16px; }
+  h1 { font-size:1.6rem; margin-bottom:.25rem; }
+  .btn { display:block; text-align:center; text-decoration:none; color:#fff; background:var(--btn); padding:1rem; border-radius:12px; font-weight:600; margin:.75rem 0; }
+  .btn.alt { background:var(--btn2); }
+  .btn.g { background:var(--g); }
+  .box { background:var(--box); padding:.75rem 1rem; border-radius:12px; margin:1rem 0; }
+  code { word-break:break-all; font-size:.9rem; }
+  small { color:var(--muted); }
+  ol { padding-left:1.25rem; } li { margin:.3rem 0; }
+</style>
+</head>
+<body>
+<h1>Abfallkalender Rostock-Warnemünde</h1>
+<p>Alle Abfuhrtermine für Rostock-Warnemünde direkt im Handy-Kalender: schwarze Tonne, Biotonne, gelbe Tonne und blaue Tonne.
+Neue Termine und Änderungen kommen von selbst dazu, auch für die nächsten Jahre.</p>
+
+<h2>iPhone / iPad</h2>
+<a class="btn" id="ios-alarm" href="abfall-erinnerung.ics">Abonnieren – mit Erinnerung am Vorabend (18:00 Uhr)</a>
+<a class="btn alt" id="ios-plain" href="abfall.ics">Abonnieren – ohne Erinnerung</a>
+<p><small>Danach fragt das iPhone „Kalenderabo hinzufügen?“ → <strong>Abonnieren</strong> → <strong>Hinzufügen</strong>.</small></p>
+<div class="box">
+<strong>iPhone und iPad (mehrere Apple-Geräte)?</strong><br>
+Über die Knöpfe landet das Abo oft nur „Auf meinem iPhone“ und erscheint nicht auf dem iPad.
+Entweder auf jedem Gerät einmal den Knopf antippen – oder einmal über iCloud einrichten:
+<ol>
+  <li>Kalender-App → unten <strong>„Kalender“</strong> → <strong>„Kalender hinzufügen“</strong> → <strong>„Kalenderabo hinzufügen“</strong>.</li>
+  <li>Diese Adresse eingeben: <code class="alarm-url"></code></li>
+  <li><strong>„Abonnieren“</strong> → bei <strong>„Account“</strong> <strong>iCloud</strong> wählen (nicht „Auf meinem iPhone“) → <strong>„Hinzufügen“</strong>.</li>
+</ol>
+<small>Die Auswahl „Account“ gibt es ab ca. iOS 17. Bei iCloud-Abos kann die Erinnerung wegfallen; dann in den Einstellungen unter Kalender → „Standardhinweiszeiten“ für ganztägige Ereignisse eine Erinnerung einstellen.
+Ein altes Abo entfernen: Kalender-App → „Kalender“ → ⓘ beim Abfallkalender → „Abo löschen“.</small>
+</div>
+
+<h2>Android / Google Kalender</h2>
+<a class="btn g" id="google" href="https://calendar.google.com/">In Google Kalender abonnieren</a>
+<ol>
+  <li>Knopf antippen, mit dem Google-Konto anmelden und bei „Kalender hinzufügen?“ auf <strong>Hinzufügen</strong> tippen.</li>
+  <li>Öffnet sich nur die Kalender-App ohne Nachfrage: Knopf lange drücken → „In neuem Tab öffnen“ (Chrome), dort im Menü ⋮ <strong>„Desktopwebsite“</strong> anhaken und nochmal versuchen. Am Computer klappt es immer.</li>
+  <li>Nach ein paar Minuten (manchmal Stunden) erscheint der Kalender „Abfall Warnemünde“ in der Kalender-App. Falls nicht: Kalender-App → Menü ☰ → Einstellungen → „Abfall Warnemünde“ → <strong>Synchronisieren</strong> einschalten.</li>
+  <li>Erinnerung (optional): Google übernimmt keine Erinnerungen aus Abos. Am Computer unter calendar.google.com → Einstellungen → „Abfall Warnemünde“ → Benachrichtigungen für ganztägige Termine, z. B. „1 Tag vorher um 18:00“.</li>
+</ol>
+
+<h2>Andere Programme (Outlook, Thunderbird …)</h2>
+<p>Adresse mit Erinnerung:</p>
+<div class="box"><code id="alarm"></code></div>
+<p>Adresse ohne Erinnerung:</p>
+<div class="box"><code id="plain"></code></div>
+
+<p><small>Inoffizieller Dienst, keine Gewähr. Maßgeblich sind die Angaben von stadtentsorgung-rostock.de.</small></p>
+<script>
+  var base = location.href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
+  var plain = base + "abfall.ics", alarm = base + "abfall-erinnerung.ics";
+  var webcal = function (u) { return u.replace(/^https?:/, "webcal:"); };
+  document.getElementById("plain").textContent = plain;
+  document.getElementById("alarm").textContent = alarm;
+  document.querySelectorAll(".alarm-url").forEach(function (e) { e.textContent = alarm; });
+  document.getElementById("ios-alarm").href = webcal(alarm);
+  document.getElementById("ios-plain").href = webcal(plain);
+  document.getElementById("google").href =
+    "https://calendar.google.com/calendar/render?cid=" + encodeURIComponent(webcal(plain));
+</script>
+</body>
+</html>

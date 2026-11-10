@@ -1,0 +1,19 @@
+{
+  "erinnerung_uhrzeit": "18:00",
+  "kalender": [
+    {
+      "id": "warnemuende",
+      "quelle": "stadtentsorgung_rostock",
+      "ordner": ".",
+      "titel": "Abfallkalender Rostock-Warnemünde",
+      "kalendername": "Abfall Warnemünde",
+      "beschreibung": "Alle Abfuhrtermine für Rostock-Warnemünde direkt im Handy-Kalender: schwarze Tonne, Biotonne, gelbe Tonne und blaue Tonne.",
+      "tonnen": [
+        "rm",
+        "lvp",
+        "pap",
+        "bio"
+      ]
+    }
+  ]
+}
